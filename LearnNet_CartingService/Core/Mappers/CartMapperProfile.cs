@@ -4,9 +4,9 @@ using LearnNet_CartingService.Domain.Entities;
 
 namespace LearnNet_CartingService.Core.Mappers
 {
-    public class CartMapper : Profile
+    public class CartMapperProfile : Profile
     {
-        public CartMapper()
+        public CartMapperProfile()
         {
             CreateMap<CartItem, CartItemDTO>();
             CreateMap<CartItemDTO, CartItem>();

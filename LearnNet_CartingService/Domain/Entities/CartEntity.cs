@@ -7,12 +7,4 @@ namespace LearnNet_CartingService.Domain.Entities
     {
         public IList<CartItem> Items { get; private set; } = new List<CartItem>();
     }
-
-    public class CartEntityValidator : AbstractValidator<CartEntity>
-	{
-		public CartEntityValidator()
-		{
-			RuleFor(x => x.Id).NotNull();
-		}
-	}
 }

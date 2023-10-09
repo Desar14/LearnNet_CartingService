@@ -2,7 +2,10 @@
 using FluentValidation;
 using LearnNet_CartingService.Core.DTO;
 using LearnNet_CartingService.Core.Interfaces;
+using LearnNet_CartingService.Core.Validators;
+using LearnNet_CartingService.Domain.Entities;
 using LearnNet_CartingService.Domain.Services;
+using LearnNet_CartingService.Domain.Validators;
 using LearnNet_CartingService.Infrastructure.Data;
 using LearnNet_CartingService.Infrastructure.Data.DataAccess;
 
@@ -25,6 +28,8 @@ namespace LearnNet_CartingService
 
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             builder.Services.AddScoped<IValidator<CartItemDTO>, CartItemDTOValidator>();
+            builder.Services.AddScoped<IValidator<CartItem>, CartItemValidator>();
+            builder.Services.AddScoped<IValidator<CartEntity>, CartEntityValidator>();
 
             builder.Services.AddSingleton<ILiteDbContext, CartingServiceLiteDbContext>();
 

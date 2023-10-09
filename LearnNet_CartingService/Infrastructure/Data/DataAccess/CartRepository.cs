@@ -4,69 +4,80 @@ using LiteDB;
 
 namespace LearnNet_CartingService.Infrastructure.Data.DataAccess
 {
-	public class CartRepository : ICartRepository
-	{
-		protected readonly ILogger<CartRepository> _logger;
-		protected readonly IConfiguration _configuration;
-		protected readonly LiteDatabase _liteDb;
+    public class CartRepository : ICartRepository
+    {
+        protected readonly ILogger<CartRepository> _logger;
+        protected readonly IConfiguration _configuration;
+        protected readonly LiteDatabase _liteDb;
 
-		public CartRepository(ILogger<CartRepository> logger, IConfiguration configuration, ILiteDbContext liteDbContext)
-		{
-			_logger = logger;
-			_configuration = configuration;
-			_liteDb = liteDbContext.Database;
-		}
+        public CartRepository(ILogger<CartRepository> logger, IConfiguration configuration, ILiteDbContext liteDbContext)
+        {
+            _logger = logger;
+            _configuration = configuration;
+            _liteDb = liteDbContext.Database;
+        }
 
-		public Task<bool> AddCartItemAsync(int cartId, CartItem cartItem)
-		{
-			var col = _liteDb.GetCollection<CartEntity>("Carts");
-			var existingCart = col.FindById(cartId);
-			
-			if (existingCart == null)
-			{
-				existingCart = new CartEntity
-				{
-					Id = cartId
-				};
-				col.Insert(existingCart);
-			}
+        public Task<bool> AddCartItemAsync(int cartId, CartItem cartItem)
+        {
+            var col = _liteDb.GetCollection<CartEntity>("Carts");
+            var existingCart = col.FindById(cartId);
 
-			existingCart.Items.Add(cartItem);
+            if (existingCart == null)
+            {
+                existingCart = new CartEntity
+                {
+                    Id = cartId
+                };
+                col.Insert(existingCart);
+            }
 
-			var result = col.Update(existingCart);
-			
-			return Task.FromResult(result);
-		}
+            var existingCartItem = existingCart.Items.FirstOrDefault(x => x.Id == cartItem.Id);
+            if (existingCartItem != null)
+            {
+                existingCart.Items.Remove(existingCartItem);
+            }
 
-		public Task<CartEntity> GetCartItemsAsync(int cartId)
-		{
-			var col = _liteDb.GetCollection<CartEntity>("Carts");
-			var existingCart = col.FindById(cartId);
+            existingCart.Items.Add(cartItem);
 
-			return Task.FromResult(existingCart);
-		}
+            var result = col.Update(existingCart);
 
-		public Task<bool> RemoveCartItemAsync(int cartId, int cartItemId)
-		{
-			var col = _liteDb.GetCollection<CartEntity>("Carts");
-			var existingCart = col.FindById(cartId);
-			
-			if (existingCart == null)
-			{
-				return Task.FromResult(false);
-			}
+            return Task.FromResult(result);
+        }
 
-			var existingCartItem = existingCart.Items.FirstOrDefault(x => x.Id == cartItemId);
-			if (existingCartItem == null)
-			{
-				return Task.FromResult(false);
-			}
+        public Task<CartEntity> GetCartItemsAsync(int cartId)
+        {
+            var col = _liteDb.GetCollection<CartEntity>("Carts");
+            var existingCart = col.FindById(cartId);
 
-			existingCart.Items.Remove(existingCartItem);
+            return Task.FromResult(existingCart);
+        }
 
-			var result = col.Update(existingCart);
-			
-			return Task.FromResult(result);
-		}
-	}
+        public Task<bool> RemoveCartItemAsync(int cartId, int cartItemId)
+        {
+            var col = _liteDb.GetCollection<CartEntity>("Carts");
+            var existingCart = col.FindById(cartId);
+
+            if (existingCart == null)
+            {
+                return Task.FromResult(false);
+            }
+
+            var existingCartItem = existingCart.Items.FirstOrDefault(x => x.Id == cartItemId);
+            if (existingCartItem == null)
+            {
+                return Task.FromResult(false);
+            }
+
+            existingCart.Items.Remove(existingCartItem);
+
+            var result = col.Update(existingCart);
+
+            if (existingCart.Items.Count == 0)
+            {
+                result = col.DeleteMany(x => x.Id == existingCart.Id) > 0;
+            }
+
+            return Task.FromResult(result);
+        }
+    }
 }
