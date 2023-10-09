@@ -52,7 +52,7 @@ namespace LearnNet_CartingService.Domain.Services
                 return Enumerable.Empty<CartItemDTO>();
             }
 
-            var result = cartEntity.Items.Select(_mapper.Map<CartItemDTO>);
+            var result = cartEntity.Items.Select(_mapper.Map<CartItemDTO>).ToList();
 
             return result;
         }
