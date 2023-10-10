@@ -17,7 +17,7 @@ namespace LearnNet_CartingService.Infrastructure.Data.DataAccess
             _liteDb = liteDbContext.Database;
         }
 
-        public Task<bool> AddCartItemAsync(int cartId, CartItem cartItem)
+        public async Task<bool> AddCartItemAsync(int cartId, CartItem cartItem)
         {
             var col = _liteDb.GetCollection<CartEntity>("Carts");
             var existingCart = col.FindById(cartId);
@@ -41,31 +41,31 @@ namespace LearnNet_CartingService.Infrastructure.Data.DataAccess
 
             var result = col.Update(existingCart);
 
-            return Task.FromResult(result);
+            return result;
         }
 
-        public Task<CartEntity> GetCartItemsAsync(int cartId)
+        public async Task<CartEntity> GetCartItemsAsync(int cartId)
         {
             var col = _liteDb.GetCollection<CartEntity>("Carts");
             var existingCart = col.FindById(cartId);
 
-            return Task.FromResult(existingCart);
+            return existingCart;
         }
 
-        public Task<bool> RemoveCartItemAsync(int cartId, int cartItemId)
+        public async Task<bool> RemoveCartItemAsync(int cartId, int cartItemId)
         {
             var col = _liteDb.GetCollection<CartEntity>("Carts");
             var existingCart = col.FindById(cartId);
 
             if (existingCart == null)
             {
-                return Task.FromResult(false);
+                return false;  
             }
 
             var existingCartItem = existingCart.Items.FirstOrDefault(x => x.Id == cartItemId);
             if (existingCartItem == null)
             {
-                return Task.FromResult(false);
+                return false;
             }
 
             existingCart.Items.Remove(existingCartItem);
@@ -77,7 +77,7 @@ namespace LearnNet_CartingService.Infrastructure.Data.DataAccess
                 result = col.DeleteMany(x => x.Id == existingCart.Id) > 0;
             }
 
-            return Task.FromResult(result);
+            return result;
         }
     }
 }

@@ -26,7 +26,6 @@ namespace LearnNet_CartingService
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
-            builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             builder.Services.AddScoped<IValidator<CartItemDTO>, CartItemDTOValidator>();
             builder.Services.AddScoped<IValidator<CartItem>, CartItemValidator>();
             builder.Services.AddScoped<IValidator<CartEntity>, CartEntityValidator>();
