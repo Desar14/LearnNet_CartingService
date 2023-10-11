@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/LearnNet_CartingService/.config
+/LearnNet_CartingService/CartingServiceDB*
+/LearnNet_CartingService/appsettings.Development.json
