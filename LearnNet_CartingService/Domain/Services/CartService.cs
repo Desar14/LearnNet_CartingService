@@ -23,7 +23,7 @@ namespace LearnNet_CartingService.Domain.Services
             _cartEntityValidator = cartEntityValidator;
         }
 
-        public async Task<bool> AddCartItemAsync(int cartId, CartItemDTO cartItemDTO)
+        public async Task<bool> AddCartItemAsync(string cartId, CartItemDTO cartItemDTO)
         {
             var entity = CartItemDTO.MapTo(cartItemDTO);
 
@@ -39,13 +39,13 @@ namespace LearnNet_CartingService.Domain.Services
             return result;
         }
 
-        public async Task<IList<CartItemDTO>> GetAllCartItemsAsync(int cartId)
+        public async Task<IList<CartItemDTO>?> GetAllCartItemsAsync(string cartId)
         {
-            var cartEntity = await _repository.GetCartItemsAsync(cartId);
+            var cartEntity = await _repository.GetCartWithItemsAsync(cartId);
 
             if (cartEntity == null)
             {
-                return new List<CartItemDTO>();
+                return null;
             }
 
             var result = cartEntity.Items.Select(CartItemDTO.MapFrom).ToList();
@@ -53,7 +53,19 @@ namespace LearnNet_CartingService.Domain.Services
             return result;
         }
 
-        public async Task<bool> RemoveCartItemAsync(int cartId, int cartItemId)
+        public async Task<CartDTO?> GetCartAsync(string cartId)
+        {
+            var cartEntity = await _repository.GetCartWithItemsAsync(cartId);
+
+            if (cartEntity == null)
+            {
+                return null;
+            }
+
+            return CartDTO.MapFrom(cartEntity);
+        }
+
+        public async Task<bool> RemoveCartItemAsync(string cartId, int cartItemId)
         {
             var result = await _repository.RemoveCartItemAsync(cartId, cartItemId);
 

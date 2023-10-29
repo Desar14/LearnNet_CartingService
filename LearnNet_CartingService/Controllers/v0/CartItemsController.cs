@@ -2,12 +2,12 @@
 using LearnNet_CartingService.Core.DTO;
 using Microsoft.AspNetCore.Mvc;
 using LearnNet_CartingService.Core.Interfaces;
+using Asp.Versioning;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-
-namespace LearnNet_CartingService.Controllers
+namespace LearnNet_CartingService.Controllers.v0
 {
-    [Route("api/[controller]")]
+    [ApiVersion(0.1)]
+    [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class CartItemsController : ControllerBase
     {
@@ -29,14 +29,14 @@ namespace LearnNet_CartingService.Controllers
 
         // GET api/<CartItemsController>/5
         [HttpGet("{id}")]
-        public async Task<IEnumerable<CartItemDTO>> GetAsync(int id)
+        public async Task<IEnumerable<CartItemDTO>> GetAsync(string id)
         {
             return await _cartService.GetAllCartItemsAsync(id);
         }
 
         // POST api/<CartItemsController>
         [HttpPost]
-        public async Task<IActionResult> Post(int id, [FromBody] CartItemDTO cartItemDTO)
+        public async Task<IActionResult> Post(string id, [FromBody] CartItemDTO cartItemDTO)
         {
             var validationResult = await _validator.ValidateAsync(cartItemDTO);
 
@@ -44,7 +44,7 @@ namespace LearnNet_CartingService.Controllers
             {
                 foreach (var error in validationResult.Errors)
                 {
-                    this.ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
                 }
 
                 return ValidationProblem();
@@ -57,14 +57,14 @@ namespace LearnNet_CartingService.Controllers
 
         // PUT api/<CartItemsController>/5
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, [FromBody] string value)
+        public async Task<IActionResult> Put(string id, [FromBody] string value)
         {
             return NotFound();
         }
 
         // DELETE api/<CartItemsController>/5
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id, int cartItemId)
+        public async Task<IActionResult> Delete(string id, int cartItemId)
         {
             var result = await _cartService.RemoveCartItemAsync(id, cartItemId);
 

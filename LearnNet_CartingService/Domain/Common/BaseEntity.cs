@@ -1,7 +1,7 @@
 ﻿namespace LearnNet_CartingService.Domain.Common
 {
-    public class BaseEntity
+    public class BaseEntity<T>
     {
-        public int Id { get; set; }
+        public T Id { get; set; }
     }
 }

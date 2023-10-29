@@ -4,10 +4,10 @@ namespace LearnNet_CartingService.Core.Interfaces
 {
 	public interface ICartRepository
 	{
-		public Task<bool> AddCartItemAsync(int cartId, CartItem cartItem);
+		public Task<bool> AddCartItemAsync(string cartId, CartItem cartItem);
 
-		public Task<bool> RemoveCartItemAsync(int cartId, int cartItemId);
+		public Task<bool> RemoveCartItemAsync(string cartId, int cartItemId);
 
-		public Task<CartEntity> GetCartItemsAsync(int cartId);
-	}
+		public Task<CartEntity?> GetCartWithItemsAsync(string cartId);
+    }
 }
