@@ -4,12 +4,11 @@ using LearnNet_CartingService.Core.DTO;
 using LearnNet_CartingService.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
-namespace LearnNet_CartingService.Controllers.v1
+namespace LearnNet_CartingService.Controllers
 {
     /// <summary>
     /// Represents a RESTful service of Carts.
     /// </summary>
-    [ApiVersion(1.0)]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class CartItemsController : ControllerBase
@@ -31,14 +30,38 @@ namespace LearnNet_CartingService.Controllers.v1
         /// <response code="200">The cart was successfully retrieved.</response>
         /// <response code="404">The cart does not exist.</response>
         [HttpGet("{id}")]
+        [ApiVersion(1.0)]
         [Produces("application/json")]
-        [ProducesResponseType(typeof(CartDTO), StatusCodes.Status200OK)]        
+        [ProducesResponseType(typeof(CartDTO), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAsync(string id)
         {
             var result = await _cartService.GetCartAsync(id);
 
-            if (result == null) 
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
+        }
+
+        /// <summary>
+        /// Gets an items of cart.
+        /// </summary>
+        /// <param name="id">The requested cart identifier.</param>
+        /// <returns>The requested cart.</returns>
+        /// <response code="200">The cart was successfully retrieved.</response>
+        /// <response code="404">The cart does not exist.</response>
+        [HttpGet("{id}")]
+        [ApiVersion(2.0)]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(IEnumerable<CartItemDTO>), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetV2Async(string id)
+        {
+            var result = await _cartService.GetAllCartItemsAsync(id);
+
+            if (result == null)
             {
                 return NotFound();
             }
@@ -53,6 +76,8 @@ namespace LearnNet_CartingService.Controllers.v1
         /// <returns>The created order.</returns>
         /// <response code="200">The item was successfully added.</response>
         /// <response code="400">The item is invalid.</response>
+        [ApiVersion(1.0)]
+        [ApiVersion(2.0)]
         [HttpPost]
         [Consumes("application/json")]
         [Produces("application/json")]
@@ -85,11 +110,13 @@ namespace LearnNet_CartingService.Controllers.v1
         /// <returns>The created order.</returns>
         /// <response code="200">The item was successfully deleted.</response>
         /// <response code="400">The item is invalid.</response>
+        [ApiVersion(1.0)]
+        [ApiVersion(2.0)]
         [HttpDelete("{id}")]
         [Consumes("application/json")]
         [Produces("application/json")]
         [ProducesResponseType(typeof(IActionResult), StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]        
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(string id, int cartItemId)
         {
             var result = await _cartService.RemoveCartItemAsync(id, cartItemId);

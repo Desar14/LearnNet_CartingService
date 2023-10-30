@@ -30,10 +30,10 @@ namespace LearnNet_CartingService
 
         private static OpenApiInfo CreateInfoForApiVersion(ApiVersionDescription description)
         {
-            var text = new StringBuilder("Catalog API with versioning");
+            var text = new StringBuilder("Carting API with versioning");
             var info = new OpenApiInfo()
             {
-                Title = "Catalog Service API",
+                Title = "Carting Service API",
                 Version = description.ApiVersion.ToString(),
                 Contact = new OpenApiContact() { Name = "Andrey Borodavko", Email = "desar14@gmail.com" },
                 License = new OpenApiLicense() { Name = "MIT", Url = new Uri("https://opensource.org/licenses/MIT") }
