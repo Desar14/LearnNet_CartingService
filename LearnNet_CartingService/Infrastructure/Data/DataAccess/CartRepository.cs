@@ -17,7 +17,7 @@ namespace LearnNet_CartingService.Infrastructure.Data.DataAccess
             _liteDb = liteDbContext.Database;
         }
 
-        public async Task<bool> AddCartItemAsync(int cartId, CartItem cartItem)
+        public async Task<bool> AddCartItemAsync(string cartId, CartItem cartItem)
         {
             var col = _liteDb.GetCollection<CartEntity>("Carts");
             var existingCart = col.FindById(cartId);
@@ -44,7 +44,7 @@ namespace LearnNet_CartingService.Infrastructure.Data.DataAccess
             return result;
         }
 
-        public async Task<CartEntity> GetCartItemsAsync(int cartId)
+        public async Task<CartEntity?> GetCartWithItemsAsync(string cartId)
         {
             var col = _liteDb.GetCollection<CartEntity>("Carts");
             var existingCart = col.FindById(cartId);
@@ -52,14 +52,14 @@ namespace LearnNet_CartingService.Infrastructure.Data.DataAccess
             return existingCart;
         }
 
-        public async Task<bool> RemoveCartItemAsync(int cartId, int cartItemId)
+        public async Task<bool> RemoveCartItemAsync(string cartId, int cartItemId)
         {
             var col = _liteDb.GetCollection<CartEntity>("Carts");
             var existingCart = col.FindById(cartId);
 
             if (existingCart == null)
             {
-                return false;  
+                return false;
             }
 
             var existingCartItem = existingCart.Items.FirstOrDefault(x => x.Id == cartItemId);

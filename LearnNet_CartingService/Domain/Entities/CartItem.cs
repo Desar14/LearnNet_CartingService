@@ -4,7 +4,7 @@ using System.Drawing;
 
 namespace LearnNet_CartingService.Domain.Entities
 {
-	public class CartItem : BaseAuditableEntity
+	public class CartItem : BaseAuditableEntity<int>
     {
         public string? Name { get; set; }
         public string? ImageUrl { get; set; }
