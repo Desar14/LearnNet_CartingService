@@ -103,6 +103,42 @@ namespace LearnNet_CartingService.Controllers
         }
 
         /// <summary>
+        /// Updated properties of item in all carts.
+        /// </summary>
+        /// <param name="cartItemDTO">The item to update.</param>
+        /// <returns>The created order.</returns>
+        /// <response code="200">The item was successfully added, or not found in any cart.</response>
+        /// <response code="400">The item is invalid.</response>
+        [ApiVersion(1.0)]
+        [ApiVersion(2.0)]
+        [HttpPut]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        [ProducesResponseType(typeof(IActionResult), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Put([FromBody] CartItemDTO cartItemDTO)
+        {
+            cartItemDTO.Updating = true;
+            cartItemDTO.Quantity = -1; //doesn't matter here
+
+            var validationResult = await _validator.ValidateAsync(cartItemDTO);
+
+            if (!validationResult.IsValid)
+            {
+                foreach (var error in validationResult.Errors)
+                {
+                    ModelState.AddModelError(error.PropertyName, error.ErrorMessage);
+                }
+
+                return ValidationProblem();
+            }
+
+            var result = await _cartService.UpdateItemsAsync(cartItemDTO);
+
+            return result ? Ok() : BadRequest();
+        }
+
+        /// <summary>
         /// Delete an Item from cart. If it's the last item - cart would be deleted also.
         /// </summary>
         /// <param name="id">The item of cart to delete.</param>

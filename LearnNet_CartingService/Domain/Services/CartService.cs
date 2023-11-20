@@ -71,5 +71,21 @@ namespace LearnNet_CartingService.Domain.Services
 
             return result;
         }
+
+        public async Task<bool> UpdateItemsAsync(CartItemDTO cartItemDTO)
+        {
+            var entity = CartItemDTO.MapTo(cartItemDTO);
+
+            var validationResult = _cartItemValidator.Validate(entity);
+
+            if (!validationResult.IsValid)
+            {
+                throw new ValidationException(validationResult.Errors);
+            }
+
+            var result = await _repository.UpdateCartItemsAsync(entity);
+
+            return result;
+        }
     }
 }

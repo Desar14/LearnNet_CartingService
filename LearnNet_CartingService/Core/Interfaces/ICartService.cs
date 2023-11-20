@@ -10,6 +10,8 @@ namespace LearnNet_CartingService.Core.Interfaces
 
         Task<bool> AddCartItemAsync(string cartId, CartItemDTO cartItemDTO);
 
-		Task<bool> RemoveCartItemAsync(string cartId, int cartItemId);
+        Task<bool> UpdateItemsAsync(CartItemDTO cartItemDTO);
+
+        Task<bool> RemoveCartItemAsync(string cartId, int cartItemId);
 	}
 }
