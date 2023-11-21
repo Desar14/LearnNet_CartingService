@@ -79,5 +79,38 @@ namespace LearnNet_CartingService.Infrastructure.Data.DataAccess
 
             return result;
         }
+
+        public async Task<bool> UpdateCartItemsAsync(CartItem cartItem)
+        {
+            var col = _liteDb.GetCollection<CartEntity>("Carts");
+            var existingCarts = col.Find(x => x.Items.Where(item => item.Id == cartItem.Id).Count() > 0);
+
+            if (existingCarts == null || existingCarts.Count() == 0)
+            {
+                return true;
+            }
+            var transactionStarted = _liteDb.BeginTrans();
+
+            if (!transactionStarted)
+            {
+                throw new Exception("failed to create a transaction");
+            }
+
+            foreach (var cart in existingCarts) { 
+                foreach (var item in cart.Items.Where(item => item.Id == cartItem.Id))
+                {
+                    item.Price = cartItem.Price;
+                    item.Name = cartItem.Name;
+                    item.ImageUrl = cartItem.ImageUrl;
+                    item.ImageText = cartItem.ImageText;
+                }
+
+                col.Update(cart);
+            }
+
+            var result = _liteDb.Commit();
+
+            return result;
+        }
     }
 }

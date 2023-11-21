@@ -1,15 +1,18 @@
-﻿using FluentValidation;
-using LearnNet_CartingService.Domain.Entities;
+﻿using LearnNet_CartingService.Domain.Entities;
+using System.Text.Json.Serialization;
 
 namespace LearnNet_CartingService.Core.DTO
 {
-	public class CartItemDTO
+    public class CartItemDTO
     {
         public int Id { get; set; }
         public string? Name { get; set; }
         public ItemImageDTO? Image { get; set; }
         public decimal Price { get; set; }
         public int Quantity { get; set; }
+
+        [JsonIgnore]
+        public bool Updating {  get; set; } = false;
 
         public static CartItemDTO MapFrom(CartItem cartItem)
         {
