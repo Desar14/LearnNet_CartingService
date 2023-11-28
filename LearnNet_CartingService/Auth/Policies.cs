@@ -2,9 +2,9 @@
 {
     public static class Policies
     {
-        public const string Read = "read";
-        public const string Create = "create";
-        public const string Update = "update";
-        public const string Delete = "delete";
+        public const string Read = "cart_read";
+        public const string Create = "cart_create";
+        public const string Update = "cart_update";
+        public const string Delete = "cart_delete";
     }
 }

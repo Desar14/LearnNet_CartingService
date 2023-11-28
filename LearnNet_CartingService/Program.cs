@@ -51,25 +51,25 @@ namespace LearnNet_CartingService
                 options.AddPolicy(Policies.Read, policy =>
                 {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireAssertion(x => x.User.HasClaim(x => x.Type == "scope" && x.Value.Contains("read")));
+                    policy.RequireClaim("scope", "carts.read");
                 });
 
                 options.AddPolicy(Policies.Create, policy =>
                 {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireAssertion(x => x.User.HasClaim(x => x.Type == "scope" && x.Value.Contains("create")));
+                    policy.RequireClaim("scope", "carts.create");
                 });
 
                 options.AddPolicy(Policies.Update, policy =>
                 {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireAssertion(x => x.User.HasClaim(x => x.Type == "scope" && x.Value.Contains("update")));
+                    policy.RequireClaim("scope", "carts.update");
                 });
 
                 options.AddPolicy(Policies.Delete, policy =>
                 {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireAssertion(x => x.User.HasClaim(x => x.Type == "scope" && x.Value.Contains("delete")));
+                    policy.RequireClaim("scope", "carts.delete");
                 });
             });
 
