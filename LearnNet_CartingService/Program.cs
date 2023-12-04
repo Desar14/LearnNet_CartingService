@@ -1,6 +1,7 @@
 
 using Asp.Versioning;
 using FluentValidation;
+using LearnNet_CartingService.Auth;
 using LearnNet_CartingService.Core.DTO;
 using LearnNet_CartingService.Core.Interfaces;
 using LearnNet_CartingService.Core.Validators;
@@ -9,12 +10,16 @@ using LearnNet_CartingService.Domain.Services;
 using LearnNet_CartingService.Domain.Validators;
 using LearnNet_CartingService.Infrastructure.Data;
 using LearnNet_CartingService.Infrastructure.Data.DataAccess;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.CodeAnalysis.Options;
 using Microsoft.Extensions.Options;
+using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace LearnNet_CartingService
 {
-	public class Program
+    public class Program
     {
         public static void Main(string[] args)
         {
@@ -23,6 +28,52 @@ namespace LearnNet_CartingService
             // Add services to the container.
 
             builder.Services.Configure<LiteDbOptions>(builder.Configuration.GetSection("LiteDbOptions"));
+
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.Authority = builder.Configuration["JWT:ValidIssuer"];
+
+                options.TokenValidationParameters.ValidateAudience = true;
+                options.Audience = builder.Configuration["JWT:ValidAudience"];
+
+                // it's recommended to check the type header to avoid "JWT confusion" attacks
+                options.TokenValidationParameters.ValidTypes = new[] { "at+jwt" };
+            });
+
+            builder.Services.AddAuthorization(options =>
+            {
+                options.AddPolicy(Policies.Read, policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("scope", "carts.read");
+                });
+
+                options.AddPolicy(Policies.Create, policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("scope", "carts.create");
+                });
+
+                options.AddPolicy(Policies.Update, policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("scope", "carts.update");
+                });
+
+                options.AddPolicy(Policies.Delete, policy =>
+                {
+                    policy.RequireAuthenticatedUser();
+                    policy.RequireClaim("scope", "carts.delete");
+                });
+            });
+
+            builder.Services.AddEndpointsApiExplorer();
 
             builder.Services.AddControllers();
             builder.Services.AddApiVersioning(setup =>
@@ -51,6 +102,30 @@ namespace LearnNet_CartingService
 
                 // integrate xml comments
                 options.IncludeXmlComments(filePath);
+
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    In = ParameterLocation.Header,
+                    Description = "Please enter a valid token",
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.Http,
+                    BearerFormat = "JWT",
+                    Scheme = "Bearer"
+                });
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type=ReferenceType.SecurityScheme,
+                                Id="Bearer"
+                            }
+                        },
+                        new string[]{}
+                    }
+                });
             });
 
             builder.Services.AddScoped<IValidator<CartItemDTO>, CartItemDTOValidator>();
@@ -62,9 +137,10 @@ namespace LearnNet_CartingService
             builder.Services.AddScoped<ICartRepository, CartRepository>();
 
             builder.Services.AddScoped<ICartService, CartService>();
-            
 
-            
+            builder.Services.AddSingleton<
+                   IAuthorizationMiddlewareResultHandler, AuthLogMiddleware>();
+
 
             var app = builder.Build();
 
@@ -87,8 +163,8 @@ namespace LearnNet_CartingService
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
-
 
             app.MapControllers();
 

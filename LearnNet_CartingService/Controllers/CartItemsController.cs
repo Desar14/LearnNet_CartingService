@@ -2,6 +2,7 @@
 using FluentValidation;
 using LearnNet_CartingService.Core.DTO;
 using LearnNet_CartingService.Core.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LearnNet_CartingService.Controllers
@@ -9,6 +10,7 @@ namespace LearnNet_CartingService.Controllers
     /// <summary>
     /// Represents a RESTful service of Carts.
     /// </summary>
+    [Authorize]
     [Route("api/v{version:apiVersion}/[controller]")]
     [ApiController]
     public class CartItemsController : ControllerBase
