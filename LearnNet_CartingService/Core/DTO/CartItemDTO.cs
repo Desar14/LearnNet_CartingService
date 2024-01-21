@@ -1,4 +1,5 @@
 ﻿using LearnNet_CartingService.Domain.Entities;
+using LearnNet_CartingService.gRPC;
 using System.Text.Json.Serialization;
 
 namespace LearnNet_CartingService.Core.DTO
@@ -32,6 +33,24 @@ namespace LearnNet_CartingService.Core.DTO
             return dto;
         }
 
+        public static CartItemDTO MapFrom(CartItemMessage cartItem)
+        {
+            var dto = new CartItemDTO
+            {
+                Id = cartItem.Id,
+                Name = cartItem.Name,
+                Image = new ItemImageDTO
+                {
+                    Url = cartItem.Image.Url,
+                    AltText = cartItem.Image.AltText
+                },
+                Price = (decimal)cartItem.Price,
+                Quantity = cartItem.Quantity
+            };
+
+            return dto;
+        }
+
         public static CartItem MapTo(CartItemDTO dto) 
         {
             var entity = new CartItem
@@ -45,6 +64,20 @@ namespace LearnNet_CartingService.Core.DTO
             };
 
             return entity;
+        }
+
+        public static CartItemMessage MapToMessage(CartItemDTO dto)
+        {
+            var message = new CartItemMessage
+            {
+                Id = dto.Id,
+                Name = dto.Name,
+                Image = new ItemImageMessage { AltText = dto.Image?.AltText, Url = dto.Image?.Url },
+                Price = (double)dto.Price,
+                Quantity = dto.Quantity
+            };
+
+            return message;
         }
     }
 

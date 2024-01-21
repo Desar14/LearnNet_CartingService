@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+option csharp_namespace = "LearnNet_CartingService.gRPC";
+
+package CartingServiceAPI;
+
+// The Carting service definition.
+service CartingGrpc {
+  rpc GetItemsUnary (GetCartItemsByIdRequest) returns (GetCartItemsUnaryResponse);
+  rpc GetItemsStream (GetCartItemsByIdRequest) returns (stream CartItemStreamResponse);
+  rpc AddItemsStream (stream AddCartItemsStreamRequest) returns (GetCartItemsUnaryResponse);
+  rpc AddItemsBiStream (stream AddCartItemsStreamRequest) returns (stream CartItemStreamResponse);
+}
+
+message GetCartItemsByIdRequest {
+  string cart_id = 1;
+}
+
+message GetCartItemsUnaryResponse {
+  repeated CartItemMessage items = 1;
+}
+
+message AddCartItemsStreamRequest {
+  string cart_id = 1;
+  CartItemMessage item = 2;
+}
+
+message CartItemStreamResponse {
+  string cart_id = 1;  
+  repeated CartItemMessage items = 2;
+}
+
+message CartItemMessage {
+  int32 id = 1;
+  string name = 2;
+  double price = 3;
+  int32 quantity = 4;
+  optional ItemImageMessage image = 5;
+}
+
+message ItemImageMessage {
+  string url = 1;
+  string alt_text = 2;
+}
