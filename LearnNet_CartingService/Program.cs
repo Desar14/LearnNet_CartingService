@@ -8,6 +8,7 @@ using LearnNet_CartingService.Core.Validators;
 using LearnNet_CartingService.Domain.Entities;
 using LearnNet_CartingService.Domain.Services;
 using LearnNet_CartingService.Domain.Validators;
+using LearnNet_CartingService.gRPC;
 using LearnNet_CartingService.Infrastructure.Data;
 using LearnNet_CartingService.Infrastructure.Data.DataAccess;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -141,6 +142,10 @@ namespace LearnNet_CartingService
             builder.Services.AddSingleton<
                    IAuthorizationMiddlewareResultHandler, AuthLogMiddleware>();
 
+            builder.Services.AddGrpc();
+            builder.Services.AddGrpcReflection();
+
+            builder.Logging.AddConsole();
 
             var app = builder.Build();
 
@@ -160,6 +165,7 @@ namespace LearnNet_CartingService
                 }
             });
 
+            app.MapGrpcService<CartingGrpcService>();
 
             app.UseHttpsRedirection();
 
@@ -167,6 +173,11 @@ namespace LearnNet_CartingService
             app.UseAuthorization();
 
             app.MapControllers();
+
+            if (app.Environment.IsDevelopment())
+            {
+                app.MapGrpcReflectionService();
+            }
 
             app.Run();
         }
