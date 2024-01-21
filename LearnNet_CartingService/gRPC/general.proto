@@ -26,7 +26,8 @@ message AddCartItemsStreamRequest {
 }
 
 message CartItemStreamResponse {
-  CartItemMessage item = 1;
+  string cart_id = 1;  
+  repeated CartItemMessage items = 2;
 }
 
 message CartItemMessage {
